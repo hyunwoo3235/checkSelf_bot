@@ -12,7 +12,7 @@ const CovidVirusCheck = {
 setschul('학교명', '지역');
 
 function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
-    if (msg === "/자가진단") { //Made By EliF(원출처) 수정: 자전거515
+    if (msg === "/자가진단") {
         var result = new Array();
         for (i = 0; i < CovidVirusCheck.setting.length; i++) {
             result[i] = (i + 1) + "번\n" + doSubmit(doLogin()) + "\n\n";
