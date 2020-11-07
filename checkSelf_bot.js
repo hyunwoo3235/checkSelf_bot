@@ -1,7 +1,6 @@
 const FS = FileStream;
-const path = '/sdcard/bot/selfauto.txt';
+const path = '/sdcard/bot/selfcheck.txt';
 
-var i = 0;
 if (!FS.read(path)) FS.write(path, "[]");
 const CovidVirusCheck = {
     setting: JSON.parse(FS.read(path)),
@@ -11,26 +10,27 @@ const CovidVirusCheck = {
 
 setschul('학교명', '지역');
 
-function response(room, msg, sender, isGroupChat, replier, imageDB, packageName) {
-    if (msg === "/자가진단") {
+function response(h, a, t, s, u, n, e) {
+    if (a === "/자가진단") {
         var result = new Array();
         for (i = 0; i < CovidVirusCheck.setting.length; i++) {
-            result[i] = (i + 1) + "번\n" + doSubmit(doLogin()) + "\n\n";
+            result[i] = (i + 1) + "번 " + CovidVirusCheck.setting[i].Name + "\n" + doSubmit(doLogin()) + "\n\n";
         }
         var res = '';
         for (i = 0; i < CovidVirusCheck.setting.length; i++) {
             res += result[i];
         }
-        replier.reply("<자가진단 결과>" + "\u200b".repeat(500) + "\n" + res);
+        u.reply("<자가진단 결과>" + "\u200b".repeat(500) + "\n" + res);
     }
-    if (msg.startsWith('/추가')) {
-        var str = msg.substr(4).split('/');
+    if (a.startsWith('/추가')) {
+        var str = a.substr(4).split('/');
         var data = encrypt(str[0], str[1]);
         CovidVirusCheck.setting.push({
+            "Name": str[0],
             "myName": data.pName,
             "myBirth": data.frnoRidno
         })
-        replier.reply(str[0] + '님 등록 완료');
+        u.reply(str[0] + '님 등록 완료');
         FS.write(path, JSON.stringify(CovidVirusCheck.setting, null, 4));
     }
 }
@@ -56,12 +56,14 @@ function setschul(schulNm, geoNm) {
 }
 
 function doLogin() {
-    var result = Jsoup.connect(CovidVirusCheck.baseURL + 'loginwithschool').header(
-        "Content-Type", "application/json"
+    var result = Jsoup.connect(CovidVirusCheck.baseURL + 'v2/findUser').header(
+        "Content-Type", "application/json;charset=UTF-8"
     ).requestBody(JSON.stringify({
-        "orgcode": CovidVirusCheck.schoolCode,
+        "orgCode": CovidVirusCheck.schoolCode,
         "name": CovidVirusCheck.setting[i].myName,
-        "birthday": CovidVirusCheck.setting[i].myBirth
+        "birthday": CovidVirusCheck.setting[i].myBirth,
+        "loginType": "school",
+        "stdntPNo": ""
     })).ignoreContentType(true).ignoreHttpErrors(true).post().text();
     return JSON.parse(result).token;
 }
@@ -74,10 +76,10 @@ function doSubmit(token) {
     ).requestBody(JSON.stringify({
         "rspns01": "1",
         "rspns02": "1",
-        "rspns07": "0",
-        "rspns08": "0",
         "rspns09": "0",
         "rspns00": "Y",
-        "deviceuuid": ""
+        "deviceuuid": "",
+        'upperToken': token,
+        'upperUserNameEncpt': CovidVirusCheck.setting[i].Name
     })).ignoreContentType(true).ignoreHttpErrors(true).post().text();
 }
