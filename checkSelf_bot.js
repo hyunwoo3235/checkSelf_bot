@@ -38,14 +38,14 @@ function response(h, a, t, s, u, n, e) {
 importClass(org.jsoup.Jsoup);
 
 function encrypt(pName, frnoRidno) {
-    return JSON.parse(org.jsoup.Jsoup.connect('http://hw3235.herokuapp.com')
+    return JSON.parse(org.jsoup.Jsoup.connect('http://193.123.246.37/api')
         .data("pName", pName)
         .data("frnoRidno", frnoRidno)
         .ignoreContentType(true).get().text());
 }
 
 function setschul(schulNm, geoNm) {
-    var res = JSON.parse(org.jsoup.Jsoup.connect('http://hw3235.herokuapp.com')
+    var res = JSON.parse(org.jsoup.Jsoup.connect('http://193.123.246.37/api')
         .data("schulNm", schulNm)
         .data("geoNm", geoNm)
         .ignoreContentType(true).get().text());
